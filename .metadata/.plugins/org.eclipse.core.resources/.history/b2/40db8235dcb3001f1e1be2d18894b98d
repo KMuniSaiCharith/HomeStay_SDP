@@ -1,0 +1,10 @@
+spring.application.name=homestayPlatform
+
+spring.datasource.url=jdbc:mysql://localhost:3306/homestay_db
+spring.datasource.username=root
+spring.datasource.password=P@ss111213
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+bezkoder.app.jwtSecret= ======================BezKoder=Spring===========================
+bezkoder.app.jwtExpirationMs=86400000

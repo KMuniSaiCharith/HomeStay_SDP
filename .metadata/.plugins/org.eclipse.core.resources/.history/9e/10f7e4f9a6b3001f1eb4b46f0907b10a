@@ -1,0 +1,14 @@
+package com.example.homestayplatform.controller;
+
+import java.util.Optional;
+
+import com.example.homestayplatform.model.User;
+
+public class UserDetailsImpl {
+
+	public Optional<User> getAuthorities() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

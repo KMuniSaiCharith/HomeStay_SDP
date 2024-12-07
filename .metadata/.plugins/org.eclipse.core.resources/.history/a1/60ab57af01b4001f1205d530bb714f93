@@ -1,0 +1,48 @@
+package com.example.homestayplatform.controller;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.example.homestayplatform.dto.SignUpRequest;
+import com.example.homestayplatform.dto.SignUpResponse;
+import com.example.homestayplatform.model.User;
+import com.example.homestayplatform.service.UserService;
+
+
+@CrossOrigin(origins = "http://localhost:5173") 
+@RestController
+@RequestMapping("/api")
+public class AuthController {
+
+	@Autowired
+    UserService userService;
+
+    // Define the login API endpoint
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody User u) {
+	    Optional<User> user = userService.userValidate(u.getUsername());
+
+	    if (user.isPresent()) {
+	        return ResponseEntity.ok(user.get()); // Return the found user
+	    } else {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+	    }
+	}
+
+    
+    @PostMapping("/signup")
+    public ResponseEntity<SignUpResponse> signupUser(@RequestBody SignUpRequest signupRequest) {
+        // Call the service method to save the user
+        boolean isSignupSuccessful = userService.signupUser(signupRequest.getUsername(), signupRequest.getPassword(), signupRequest.getRole());
+
+        if (isSignupSuccessful) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(new SignUpResponse("User registered successfully"));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new SignUpResponse("User registration failed: Username already exists"));
+        }
+    }
+}

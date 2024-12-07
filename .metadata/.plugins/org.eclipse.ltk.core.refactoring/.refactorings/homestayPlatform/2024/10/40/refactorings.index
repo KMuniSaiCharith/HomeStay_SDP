@@ -1,0 +1,17 @@
+1727867288862	Rename package 'com.example.demo'
+1727867320486	Rename package 'com.example.demo.controller'
+1727867340473	Rename package 'com.example.demo.model'
+1727867358090	Rename package 'com.example.demo.security'
+1727867383178	Rename package 'com.example.demo.repository'
+1727867397701	Rename package 'com.example.demo.service'
+1727868232633	Delete element
+1727868663478	Delete element
+1727868682832	Delete element
+1727883419930	Delete element
+1727883480261	Delete element
+1727884840561	Copy compilation unit
+1727884989337	Delete element
+1727895453789	Rename type 'LoginRequest'
+1727895557431	Rename type 'SignUpRequest'
+1727895589487	Rename type 'SignUpReponse'
+1727895657243	Rename type 'AuthController'

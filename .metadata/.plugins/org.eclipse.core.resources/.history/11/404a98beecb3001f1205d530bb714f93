@@ -1,0 +1,24 @@
+package com.example.homestayplatform.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import com.example.homestayplatform.model.User;
+import com.example.homestayplatform.model.UserManager;
+
+
+@CrossOrigin(origins = "http://localhost:5173") 
+@RestController
+@RequestMapping("/api")
+public class LogInController {
+
+	@Autowired
+    UserManager UM;
+
+    // Define the login API endpoint
+    @PostMapping("/login")
+    public String Login(@RequestBody User u) {
+    	return UM.userValidate(u);
+    	
+    }
+}

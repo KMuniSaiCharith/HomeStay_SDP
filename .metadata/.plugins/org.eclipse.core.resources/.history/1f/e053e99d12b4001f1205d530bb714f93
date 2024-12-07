@@ -1,0 +1,74 @@
+package com.example.homestayplatform.controller;
+
+import com.example.homestayplatform.model.Homestay;
+import com.example.homestayplatform.service.HomestayService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/homestays")
+public class HomestayController {
+
+    @Autowired
+    private HomestayService homestayService;
+
+    // Add a new homestay
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<String> addHomestay(
+    		@RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam("price") double price,
+            @RequestParam("location") String location, 
+            @RequestParam("hostId") Long hostId, 
+            @RequestPart(value = "image", required = false) MultipartFile image
+    		) {
+    	
+    	byte[] imageBytes = null;
+        if (image != null && !image.isEmpty()) {
+            try {
+                imageBytes = image.getBytes();
+            } catch (IOException e) {
+                return ResponseEntity.badRequest().body("Failed to upload image: " + e.getMessage());
+            }
+        }
+        return ResponseEntity.ok("Homestay added succesfully");
+    }
+
+    // Get homestays by location
+    @GetMapping("/location/{location}")
+    public ResponseEntity<List<Homestay>> getHomestaysByLocation(@PathVariable String location) {
+        List<Homestay> homestays = homestayService.getHomestaysByLocation(location);
+        return ResponseEntity.ok(homestays);
+    }
+
+    // Get homestays by host
+    @GetMapping("/host/{hostId}")
+    public ResponseEntity<List<Homestay>> getHomestaysByHost(@PathVariable Long hostId) {
+        List<Homestay> homestays = homestayService.getHomestaysByHost(hostId);
+        return ResponseEntity.ok(homestays);
+    }
+
+    // Get homestay by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Homestay> getHomestayById(@PathVariable Long id) {
+        Homestay homestay = homestayService.getHomestayById(id);
+        return ResponseEntity.ok(homestay);
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateHomstay(@PathVariable("id") Long id, @RequestBody Homestay updatedHomestay){
+    	Homestay homestay=homestayService.updateHomestay(id, updatedHomestay);
+    	return ResponseEntity.ok(homestay);
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteHomestay(@PathVariable("id") Long id){
+    	homestayService.deleteHomestay(id);
+    	return ResponseEntity.noContent().build();
+    }
+}

@@ -1,0 +1,40 @@
+package com.example.homestayplatform.service;
+
+import com.example.homestayplatform.model.Homestay;
+import com.example.homestayplatform.repository.HomestayRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class HomestayService {
+
+    @Autowired
+    private HomestayRepository homestayRepository;
+
+    // Get all homestays by location
+    public List<Homestay> getHomestaysByLocation(String location) {
+        return homestayRepository.findByLocation(location);
+    }
+
+    // Get all homestays by host ID
+    public List<Homestay> getHomestaysByHost(Long hostId) {
+        return homestayRepository.findByHostId(hostId);
+    }
+    
+    public List<Homestay> getAllHomestays(){
+    	return homestayRepository.findAll();
+    }
+
+    // Add a new homestay
+    public Homestay addHomestay(Homestay homestay) {
+        return homestayRepository.save(homestay);
+    }
+
+    // Get a specific homestay by ID
+    public Homestay getHomestayById(Long homestayId) {
+        return homestayRepository.findById(homestayId)
+                .orElseThrow(() -> new IllegalArgumentException("Homestay not found"));
+    }
+}

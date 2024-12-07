@@ -1,0 +1,5 @@
+package com.example.homestayplatform.payload.request;
+
+public class LoginRequest {
+
+}

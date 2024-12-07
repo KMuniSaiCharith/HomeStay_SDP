@@ -1,0 +1,57 @@
+package com.example.homestayplatform.controller;
+
+import com.example.homestayplatform.model.Homestay;
+import com.example.homestayplatform.service.HomestayService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/homestays")
+public class HomestayController {
+
+    @Autowired
+    private HomestayService homestayService;
+
+    // Add a new homestay
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<Homestay> addHomestay(@RequestBody Homestay homestay) {
+        Homestay newHomestay = homestayService.addHomestay(homestay);
+        return ResponseEntity.ok(newHomestay);
+    }
+
+    // Get homestays by location
+    @GetMapping("/location/{location}")
+    public ResponseEntity<List<Homestay>> getHomestaysByLocation(@PathVariable String location) {
+        List<Homestay> homestays = homestayService.getHomestaysByLocation(location);
+        return ResponseEntity.ok(homestays);
+    }
+
+    // Get homestays by host
+    @GetMapping("/host/{hostId}")
+    public ResponseEntity<List<Homestay>> getHomestaysByHost(@PathVariable Long hostId) {
+        List<Homestay> homestays = homestayService.getHomestaysByHost(hostId);
+        return ResponseEntity.ok(homestays);
+    }
+
+    // Get homestay by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Homestay> getHomestayById(@PathVariable Long id) {
+        Homestay homestay = homestayService.getHomestayById(id);
+        return ResponseEntity.ok(homestay);
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateHomstay(@PathVariable("id") Long id, @RequestBody Homestay updatedHomestay){
+    	Homestay homestay=homestayService.updateHomestay(id, updatedHomestay);
+    	return ResponseEntity.ok(homestay);
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteHomestay(@PathVariable("id") Long id){
+    	homestayService.deleteHomestay(id);
+    	return ResponseEntity.noContent().build();
+    }
+}

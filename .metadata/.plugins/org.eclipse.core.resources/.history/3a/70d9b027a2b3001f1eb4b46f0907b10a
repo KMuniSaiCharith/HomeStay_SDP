@@ -1,0 +1,12 @@
+  package com.example.homestayplatform.controller;
+
+public class AuthController {
+
+	// Define the login API endpoint
+	    @PostMapping("/login")
+	    public String Login(@RequestBody User u) {
+	    	return UM.userValidate(u);
+	    	
+	    }
+
+}

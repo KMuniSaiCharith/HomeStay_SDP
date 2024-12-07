@@ -1,0 +1,126 @@
+package com.example.homestayplatform.controller;
+
+import com.example.homestayplatform.model.Homestay;
+import com.example.homestayplatform.service.HomestayService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+
+@CrossOrigin(origins = "http://localhost:5173/")
+@RestController
+@RequestMapping("/api/homestays")
+public class HomestayController {
+
+    @Autowired
+    private HomestayService homestayService;
+    
+    @GetMapping
+    public ResponseEntity<List<Homestay>> getAllHomestay(){
+    	List<Homestay> homestays = homestayService.getAllHomestays();
+    	return ResponseEntity.ok(homestays);
+    }
+
+    // Add a new homestay
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<String> addHomestay(
+    		@RequestParam("location") String location,
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam("price") double price,
+            @RequestParam("hostId") Long hostId,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+    	
+    	if (location == null || location.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Location must not be empty");
+        }
+    	
+    	if (image != null && !image.isEmpty()) {
+            System.out.println("Image received: " + image.getOriginalFilename());
+        } else {
+            System.out.println("No image uploaded.");
+        }
+        
+        byte[] imageBytes = null;
+        
+        // Handle image upload if present
+        if (image != null && !image.isEmpty()) {
+            try {
+                imageBytes = image.getBytes();
+            } catch (IOException e) {
+                return ResponseEntity.badRequest().body("Failed to process the image: " + e.getMessage());
+            }
+        }
+        
+        try {
+            // Call the service to save the homestay
+            Homestay addedHomestay = homestayService.addHomestay(location, name, description, price, hostId, imageBytes);
+            return ResponseEntity.ok("Homestay added successfully with ID: " + addedHomestay.getId());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add homestay: " + e.getMessage());
+        }
+    }
+
+
+    // Get homestays by location
+    @GetMapping("/location/{location}")
+    public ResponseEntity<List<Homestay>> getHomestaysByLocation(@PathVariable String location) {
+        List<Homestay> homestays = homestayService.getHomestaysByLocation(location);
+        return ResponseEntity.ok(homestays);
+    }
+
+    // Get homestays by host
+    @GetMapping("/host/{hostId}")
+    public ResponseEntity<List<Homestay>> getHomestaysByHost(@PathVariable Long hostId) {
+        List<Homestay> homestays = homestayService.getHomestaysByHost(hostId);
+        return ResponseEntity.ok(homestays);
+    }
+
+    // Get homestay by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Homestay> getHomestayById(@PathVariable Long id) {
+        Homestay homestay = homestayService.getHomestayById(id);
+        return ResponseEntity.ok(homestay);
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateHomstay(@PathVariable("id") Long id, @RequestBody Homestay updatedHomestay) {
+        // Fetch the existing homestay by its ID
+        Homestay existingHomestay = homestayService.getHomestayById(id);
+        
+        if (existingHomestay == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Homestay not found");
+        }
+
+        // Update only the fields that are provided in the request body
+        if (updatedHomestay.getName() != null) {
+            existingHomestay.setName(updatedHomestay.getName());
+        }
+        if (updatedHomestay.getDescription() != null) {
+            existingHomestay.setDescription(updatedHomestay.getDescription());
+        }
+        if (updatedHomestay.getPrice() != -1) {
+            existingHomestay.setPrice(updatedHomestay.getPrice());
+        }
+        if (updatedHomestay.getLocation() != null) {
+            existingHomestay.setLocation(updatedHomestay.getLocation());
+        }
+        // If you are handling images separately, you could also handle that here
+
+        // Save the updated homestay
+        Homestay updated = homestayService.saveHomestay(existingHomestay);
+        
+        return ResponseEntity.ok(updated);
+    }
+
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteHomestay(@PathVariable("id") Long id){
+    	homestayService.deleteHomestay(id);
+    	return ResponseEntity.noContent().build();
+    }
+}

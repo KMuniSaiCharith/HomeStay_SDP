@@ -1,0 +1,86 @@
+package com.example.homestayplatform.controller;
+
+import com.example.homestayplatform.dto.SignUpRequest;
+
+import com.example.homestayplatform.dto.SignUpResponse;
+import com.example.homestayplatform.model.User;
+import com.example.homestayplatform.payload.request.LoginRequest;
+import com.example.homestayplatform.payload.response.MessageReponse;
+import com.example.homestayplatform.repository.RoleRepository;
+import com.example.homestayplatform.repository.UserRepository;
+import com.example.homestayplatform.security.JwtUtils;
+import com.example.homestayplatform.service.UserService;
+import jakarta.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+
+import java.util.Optional;
+
+@CrossOrigin(origins = "http://localhost:5173")
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+	
+	@Autowired
+	AuthenticationManager authenticationManager;
+
+    @Autowired
+    private UserService userService;
+    
+    @Autowired
+    RoleRepository roleRepository;
+    
+    @Autowired
+    UserRepository userRepository;
+    
+    @Autowired
+    PasswordEncoder encoder;
+    
+    @Autowired
+    JwtUtils jwtutils;
+
+    // Register a new user
+    @PostMapping("/register")
+    public ResponseEntity<User> registerUser(@RequestBody User user) {
+        User newUser = userService.registerUser(user);
+        return ResponseEntity.ok(newUser);
+    }
+
+    // Get user by username
+    @GetMapping("/{username}")
+    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+        Optional<User> user = userService.findByUsername(username);
+        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // Get user by ID
+    @GetMapping("/id/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        Optional<User> user = userService.getUserById(id);
+        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+    
+ // Define the login API endpoint
+    @PostMapping("/login")
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest){
+    	Authentication authentication = authenticationManager.authenticate(
+    			new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+    	
+    }
+    
+    @PostMapping("/signup")
+    public ResponseEntity<?> signupUser(@Valid@RequestBody SignUpRequest signupRequest) {
+        if(UserRepository.existsByUsername(signupRequest.getUsername())) {
+        	return ResponseEntity
+        			.badRequest()
+        			.body(new MessageReponse("Error: Useranme is already taken!"));
+        }
+    }
+}

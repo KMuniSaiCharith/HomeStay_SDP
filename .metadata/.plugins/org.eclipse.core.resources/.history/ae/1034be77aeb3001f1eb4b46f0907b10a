@@ -1,0 +1,10 @@
+package com.example.homestayplatform.payload.request;
+
+public class SignupRequest {
+
+	public static String getUsername() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

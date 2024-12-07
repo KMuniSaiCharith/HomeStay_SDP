@@ -1,0 +1,17 @@
+package com.example.homestayplatform.repository;
+
+import com.example.homestayplatform.model.Homestay;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface HomestayRepository extends JpaRepository<Homestay, Long> {
+
+    // Find all homestays by location
+    List<Homestay> findByLocation(String location);
+
+    // Find all homestays listed by a specific host
+    List<Homestay> findByHostId(Long hostId);
+}

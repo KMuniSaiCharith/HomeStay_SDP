@@ -1,0 +1,5 @@
+package com.example.homestayplatform.service;
+
+public class UserDetailsImplService {
+
+}

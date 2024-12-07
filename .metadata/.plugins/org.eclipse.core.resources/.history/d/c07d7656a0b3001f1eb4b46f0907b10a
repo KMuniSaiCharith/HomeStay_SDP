@@ -1,0 +1,5 @@
+package com.example.homestayplatform.payload.response;
+
+public class MessageReponse {
+
+}

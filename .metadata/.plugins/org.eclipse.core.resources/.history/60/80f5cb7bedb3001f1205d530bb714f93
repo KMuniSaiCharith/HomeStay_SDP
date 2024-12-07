@@ -1,0 +1,61 @@
+package com.example.homestayplatform.service;
+
+import com.example.homestayplatform.model.User;
+import com.example.homestayplatform.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    // Find a user by their username
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    // Register a new user
+    public User registerUser(User user) {
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new IllegalArgumentException("Username already taken");
+        }
+        return userRepository.save(user);
+    }
+
+    // Get user by ID
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
+    }
+    
+    public String userValidate(User u)
+	{
+		if(userRepository.validate(u.username, u.password).compareTo("1")==0) 
+		{
+			return "Authorised User";
+		} 
+		else 
+		{
+			return "Unauthorised User";
+		}
+	}
+    
+    public boolean signupUser(String username, String password, String role) {
+        // Check if the username already exists
+        if (userRepository.existsByUsername(username)) {
+            return false; // Username already taken
+        }
+
+        // Create a new user and save it
+        User newUser = new User();
+        newUser.setUsername(username);
+        newUser.setPassword(password); // You should hash the password before saving it
+        newUser.setRole(role);
+
+        userRepository.save(newUser); // Save user to database
+        return true;
+}
+}
